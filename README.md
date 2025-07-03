@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+## 개발자들을 위한 기술 서적 관련 북클럽 서비스
+https://code-scribe-circle.lovable.app/
 
-## Project info
+## 서비스 개요
 
-**URL**: https://lovable.dev/projects/694bd65e-b8a1-4cb8-8c38-b9ca58e28ca9
+개발자들은 기술 서적을 읽으면서, 다른 사람들은 이 책을 어떻게 해석하고 있는지, 실무에서는 어떻게 적용하는지 궁금해합니다. 하지만 기존에는 직접 스터디를 만들거나, 책을 읽은 사람을 찾아야만 토론이 가능했습니다.  
+이 서비스는 **책을 기준으로 자동 토론방과 스터디를 개설**할 수 있게 하여, 개발자들이 쉽고 깊이 있게 의견을 나누고 성장할 수 있도록 돕습니다.
 
-## How can I edit this code?
+## 핵심 기능
 
-There are several ways of editing your application.
+- **책 기반 토론방 자동 생성:**  
+    책을 검색하면 전체 토론방과 챕터별/주제별 채널이 자동 개설되어, 누구나 자유롭게 참여하고 의견을 나눌 수 있습니다.
+    
+- **실시간 Q&A 및 코드 리뷰:**  
+    궁금한 점을 실시간으로 질문하고, 다양한 개발자들과 코드 리뷰, 경험 공유, 사례 토론이 가능합니다.
+    
+- **진도 관리 및 학습 기록:**  
+    개인별 진도와 토론 참여 내역을 관리할 수 있습니다.
 
-**Use Lovable**
+## Given/When/Then 인수 조건
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/694bd65e-b8a1-4cb8-8c38-b9ca58e28ca9) and start prompting.
+#### [기능 1: 기술 서적 검색 및 채널 참여]
+- **Given:** 사용자가 서비스에 접속해 특정 기술 서적을 검색한다  
+    **When:** 해당 책이 서비스에 등록되어 있으면  
+    **Then:** 책 전체 토론방과 생성되어 있는 챕터별/주제별 채널이 표시되고, 새로운 채널을 만들 수 있다.
 
-Changes made via Lovable will be committed automatically to this repo.
+#### [기능 2: 토론방에 참여하여 토론 및 Q&A]
+- **Given:** 사용자가 책의 특정 챕터에 대해 질문을 올린다  
+    **When:** 다른 사용자가 답변을 달거나 코드 예시를 공유한다  
+    **Then:** 질문자와 답변자가 실시간으로 토론하고, 코드 리뷰 및 경험을 공유할 수 있다
 
-**Use your preferred IDE**
+#### [기능 3: 토론방 private (비밀번호 설정)]
+- **Given:** 사용자가 새로운 토론방을 개설할 때
+- **When:** 비밀번호 설정 옵션을 선택하고, 비밀번호를 입력한다
+- **Then:** 해당 토론방은 비밀번호를 아는 사용자만 입장할 수 있고, 외부 사용자는 접근이 제한된다
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+#### [기능 4: 토론방 검색]
+- **Given:** 사용자가 특정 책의 토론방 목록 페이지에 진입한다
+- **When:** 검색창에 키워드(예: 챕터명, 주제, 생성자 등)를 입력한다
+- **Then:** 입력한 키워드와 일치하는 토론방만 목록에 표시된다
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+#### [기능 5: 참여중인 토론방 확인 (서재)]
+- **Given:** 사용자가 내 서재(참여중인 토론방 목록) 페이지에 진입한다
+- **When:** 시스템이 사용자의 참여 기록을 불러온다
+- **Then:** 참여 중인 책들의 표지가 서재 형태로 나열되고, 각 책을 클릭하면 해당 토론방(채널)로 이동할 수 있다
 
-Follow these steps:
+#### [기능 6: 다른 유저의 참여 토론방 확인]
+- **Given:** 사용자가 다른 유저의 프로필을 방문한다
+- **When:** 해당 유저의 참여 토론방 목록을 요청한다
+- **Then:** 그 유저가 참여 중인 책/토론방 목록이 서재 형태로 표시된다
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+#### [기능 7: 댓글 공감 버튼 및 인기순 정렬]
+- **Given:** 사용자가 토론방 내 댓글을 본다
+- **When:** 각 댓글의 공감(좋아요) 버튼을 클릭한다
+- **Then:** 공감 수가 1 증가하고, 공감이 많은 댓글이 인기순으로 정렬되어 상단에 노출된다
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 페르소나 및 사용자 시나리오
 
-# Step 3: Install the necessary dependencies.
-npm i
+**페르소나 1: 정현우 (31세, 백엔드 개발자)**
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- 기술 서적을 읽으며 궁금한 부분이나 논란이 많은 챕터에 대해 다른 개발자들과 깊이 있는 토론을 원함
+- 일정 조율과 멤버 모집의 번거로움을 해소하고, 온라인에서 책별로 토론방이 자동 개설되는 서비스를 필요로 함
 
-**Edit a file directly in GitHub**
+**시나리오:**  
+정현우는 "도메인 주도 설계" 책을 읽다가 궁금한 점이 생긴다. 서비스에서 책을 검색하자, 전체 토론방과 챕터별 채널이 자동으로 보인다. 3장 "모델 탐구" 채널에서 다양한 개발자들과 실시간 토론을 하고, 스터디 그룹에 참여해 온라인 밋업과 코드 리뷰를 경험한다.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+**페르소나 2: 김하린 (22세, 자바 입문 대학생)**
 
-**Use GitHub Codespaces**
+- 자바를 처음 배우며, 실습 예제와 기초 개념에서 자주 막힘
+- 같은 책을 공부하는 입문자들과 실시간 Q&A, 코드 리뷰, 챕터별 토론이 가능한 커뮤니티를 원함
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**시나리오:**  
+김하린은 ‘자바의 정석’ 북클럽에서 2장 “변수와 자료형” 채널에 들어가, 다른 입문자들의 질문과 답변, 실습 코드를 확인한다. 본인도 이해가 가지 않는 코드를 질문하고, 책을 읽었던 선배 개발자와 동료 입문자들에게 도움을 받는다. 학습 기록을 남기며, 학습을 이어간다.
 
-## What technologies are used for this project?
+**페르소나 3: 박민수 (28세, 프론트엔드 개발자)**
 
-This project is built with:
+- 실무에서 객체지향 프로그래밍을 적용하며, 『오브젝트』를 읽고 객체지향 철학에 대해 깊이 토론하고 싶음
+- 챕터별로 토론 주제를 정해 다양한 개발자와 의견을 나누고, 실무 적용 사례를 공유받고자 함
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**시나리오:**  
+박민수는 ‘오브젝트’ 책의 3장 ‘역할, 책임, 협력’ 채널에서 “객체의 책임을 어디까지 분리하는 게 좋은가?”라는 토론에 참여한다. 자신의 생각을 정리해 올리고, 다양한 개발자들과 실무 경험, 코드 예시, 책 해석을 주고받는다. 매주 북클럽 온라인 밋업에 참여해 실시간 토론과 실무 적용 사례를 공유하며, 객체지향 설계 역량을 높인다.
 
-## How can I deploy this project?
+**페르소나 4: 이수연(26세, 백엔드 개발자)**
 
-Simply open [Lovable](https://lovable.dev/projects/694bd65e-b8a1-4cb8-8c38-b9ca58e28ca9) and click on Share -> Publish.
+- 회사 동료들과 특정 기술 서적을 깊이 있게 공부하고 싶어 소규모 비공개 스터디를 선호함
+- 공개된 토론방 외에도, 비밀번호로 보호되는 프라이빗 토론방에서 자유롭게 의견을 나누고 싶음
+- 한 책 내에 다양한 주제의 토론방이 많아지자, 원하는 토론방을 빠르게 검색하고 찾는 기능이 필요함
+- 자신이 참여 중인 책/토론방을 한눈에 보고 관리하고 싶고, 다른 개발자들이 어떤 책과 토론방에 참여하는지도 궁금함
+- 댓글 중에서 공감이 많이 받은 토론 주제를 우선적으로 확인하고, 인기 있는 토론을 놓치고 싶지 않음
 
-## Can I connect a custom domain to my Lovable project?
+**시나리오:**
+이수연(26세)은 최근 회사 동료 4명과 함께 “이펙티브 자바”를 공부하기로 했다.  
+공개 토론방에서는 자유롭게 의견을 나누기 어렵다고 느껴, 서비스에서 **비밀번호로 보호되는 private 토론방**을 개설해 팀원들만 초대했다.  
+스터디 중 궁금한 챕터별 토론방이 많아져, **검색 기능**을 이용해 “제네릭” 관련 토론방을 빠르게 찾았다.  
+수연은 자신이 참여 중인 여러 책의 토론방을 한눈에 보고 싶어, **서재 형태의 내 참여 토론방 목록**에서 책 이미지를 클릭해 각 방으로 바로 이동했다.  
+동료의 프로필을 눌러보니, 그가 참여 중인 다른 토론방 목록도 확인할 수 있어 새로운 스터디에 관심이 생겼다.  
+토론 중 공감이 많이 달린 댓글이 상단에 노출되어, 지금 가장 활발하게 논의되는 주제와 의견을 쉽게 파악할 수 있었다.
 
-Yes, you can!
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+이 서비스는
+- 개발자들이 책을 중심으로 쉽고 깊이 있게 토론할 수 있는 플랫폼이다.
