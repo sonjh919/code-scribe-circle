@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { MessageSquare, Send, Clock } from 'lucide-react';
+import { MessageSquare, Send, Clock, Heart, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ interface Discussion {
   content: string;
   timestamp: string;
   replies: number;
+  likes: number;
+  isLiked: boolean;
 }
 
 interface DiscussionChannelProps {
@@ -20,11 +22,14 @@ interface DiscussionChannelProps {
     name: string;
     description: string;
     discussions: Discussion[];
+    isPrivate?: boolean;
   };
+  onUserClick: (userId: string) => void;
 }
 
-export const DiscussionChannel = ({ channel }: DiscussionChannelProps) => {
+export const DiscussionChannel = ({ channel, onUserClick }: DiscussionChannelProps) => {
   const [newMessage, setNewMessage] = useState('');
+  const [discussions, setDiscussions] = useState(channel.discussions);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,35 +39,75 @@ export const DiscussionChannel = ({ channel }: DiscussionChannelProps) => {
     }
   };
 
+  const handleLike = (discussionId: string) => {
+    setDiscussions(prevDiscussions =>
+      prevDiscussions.map(discussion => {
+        if (discussion.id === discussionId) {
+          return {
+            ...discussion,
+            likes: discussion.isLiked ? discussion.likes - 1 : discussion.likes + 1,
+            isLiked: !discussion.isLiked
+          };
+        }
+        return discussion;
+      })
+    );
+  };
+
+  // 공감순으로 정렬
+  const sortedDiscussions = [...discussions].sort((a, b) => b.likes - a.likes);
+
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">{channel.name}</h2>
+        <div className="flex items-center space-x-2 mb-2">
+          <h2 className="text-lg font-semibold text-gray-900">{channel.name}</h2>
+          {channel.isPrivate && (
+            <Badge variant="outline" className="text-xs">
+              비공개
+            </Badge>
+          )}
+        </div>
         <p className="text-sm text-gray-600">{channel.description}</p>
       </div>
 
       <div className="space-y-3">
-        {channel.discussions.map((discussion) => (
+        {sortedDiscussions.map((discussion) => (
           <Card key={discussion.id} className="border-gray-200">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                  <div 
+                    className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-teal-200 transition-colors"
+                    onClick={() => onUserClick(discussion.author)}
+                  >
                     <span className="text-sm font-medium text-teal-700">
                       {discussion.author.charAt(0)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-900">{discussion.author}</span>
+                    <span 
+                      className="text-sm font-medium text-gray-900 cursor-pointer hover:text-teal-600"
+                      onClick={() => onUserClick(discussion.author)}
+                    >
+                      {discussion.author}
+                    </span>
                     <div className="flex items-center space-x-2 text-xs text-gray-500">
                       <Clock className="h-3 w-3" />
                       <span>{discussion.timestamp}</span>
                     </div>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-xs">
-                  {discussion.replies}개 답글
-                </Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="outline" className="text-xs">
+                    {discussion.replies}개 답글
+                  </Badge>
+                  {discussion.likes > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      ❤️ {discussion.likes}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
@@ -71,8 +116,14 @@ export const DiscussionChannel = ({ channel }: DiscussionChannelProps) => {
                 <Button variant="ghost" size="sm" className="text-xs text-gray-500">
                   답글
                 </Button>
-                <Button variant="ghost" size="sm" className="text-xs text-gray-500">
-                  공감
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={`text-xs flex items-center space-x-1 ${discussion.isLiked ? 'text-red-500' : 'text-gray-500'}`}
+                  onClick={() => handleLike(discussion.id)}
+                >
+                  <Heart className={`h-3 w-3 ${discussion.isLiked ? 'fill-current' : ''}`} />
+                  <span>공감 {discussion.likes}</span>
                 </Button>
               </div>
             </CardContent>

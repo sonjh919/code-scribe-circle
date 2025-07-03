@@ -1,14 +1,15 @@
 
 import { useState } from 'react';
-import { Search, Book, User } from 'lucide-react';
+import { Search, Book, User, Library } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
+  onLibraryClick: () => void;
 }
 
-export const Header = ({ onSearch }: HeaderProps) => {
+export const Header = ({ onSearch, onLibraryClick }: HeaderProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -38,10 +39,22 @@ export const Header = ({ onSearch }: HeaderProps) => {
             </div>
           </form>
 
-          <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-            <User className="h-4 w-4" />
-            <span>로그인</span>
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center space-x-2"
+              onClick={onLibraryClick}
+            >
+              <Library className="h-4 w-4" />
+              <span>내 서재</span>
+            </Button>
+            
+            <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+              <User className="h-4 w-4" />
+              <span>로그인</span>
+            </Button>
+          </div>
         </div>
       </div>
     </header>

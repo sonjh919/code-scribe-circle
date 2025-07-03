@@ -1,10 +1,11 @@
-
 import { useState } from 'react';
 import { Book, Users, MessageSquare, ArrowLeft, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DiscussionChannel } from './DiscussionChannel';
+import { CreateChannelModal } from './CreateChannelModal';
+import { ChannelSearch } from './ChannelSearch';
 
 interface BookDetailProps {
   book: {
@@ -18,6 +19,7 @@ interface BookDetailProps {
     chapters: string[];
   };
   onBack: () => void;
+  onUserClick: (userId: string) => void;
 }
 
 const mockChannels = [
@@ -25,20 +27,25 @@ const mockChannels = [
     id: '1',
     name: '전체 토론',
     description: '책 전반에 대한 자유로운 토론 공간입니다.',
+    isPrivate: false,
     discussions: [
       {
         id: '1',
         author: '정현우',
         content: '이 책의 핵심 개념 중에서 가장 실무에 적용하기 어려웠던 부분이 있나요? 저는 특히 도메인 모델링 부분에서 고민이 많았습니다.',
         timestamp: '2시간 전',
-        replies: 5
+        replies: 5,
+        likes: 12,
+        isLiked: false
       },
       {
         id: '2',
         author: '김하린',
         content: '책에서 나온 예시 코드를 실제로 구현해보려고 하는데, 환경 설정 부분에서 막혔습니다. 도움 받을 수 있을까요?',
         timestamp: '4시간 전',
-        replies: 3
+        replies: 3,
+        likes: 5,
+        isLiked: true
       }
     ]
   },
@@ -46,21 +53,76 @@ const mockChannels = [
     id: '2',
     name: '1장: 객체, 설계',
     description: '첫 번째 장에 대한 토론입니다.',
+    isPrivate: false,
     discussions: [
       {
         id: '3',
         author: '박민수',
         content: '캡슐화와 응집도 개념이 실제 코드에서는 어떻게 구현되는지 궁금합니다. 실무 예시가 있으면 공유해주세요!',
         timestamp: '1일 전',
-        replies: 8
+        replies: 8,
+        likes: 18,
+        isLiked: false
+      }
+    ]
+  },
+  {
+    id: '3',
+    name: '스터디 모임 (비공개)',
+    description: '회사 동료들과의 프라이빗 스터디 공간입니다.',
+    isPrivate: true,
+    discussions: [
+      {
+        id: '4',
+        author: '이수연',
+        content: '이번 주 진도는 3장까지입니다. 다들 준비해오세요!',
+        timestamp: '1일 전',
+        replies: 4,
+        likes: 3,
+        isLiked: false
       }
     ]
   }
 ];
 
-export const BookDetail = ({ book, onBack }: BookDetailProps) => {
+export const BookDetail = ({ book, onBack, onUserClick }: BookDetailProps) => {
   const [selectedChannel, setSelectedChannel] = useState(mockChannels[0]);
   const [isJoined, setIsJoined] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [channels, setChannels] = useState(mockChannels);
+  const [filteredChannels, setFilteredChannels] = useState(mockChannels);
+
+  const handleCreateChannel = (channelData: {
+    name: string;
+    description: string;
+    isPrivate: boolean;
+    password?: string;
+  }) => {
+    const newChannel = {
+      id: String(channels.length + 1),
+      name: channelData.name,
+      description: channelData.description,
+      isPrivate: channelData.isPrivate,
+      discussions: []
+    };
+    
+    const updatedChannels = [...channels, newChannel];
+    setChannels(updatedChannels);
+    setFilteredChannels(updatedChannels);
+    console.log('새 토론방 생성:', channelData);
+  };
+
+  const handleChannelSearch = (query: string) => {
+    if (!query.trim()) {
+      setFilteredChannels(channels);
+    } else {
+      const filtered = channels.filter(channel =>
+        channel.name.toLowerCase().includes(query.toLowerCase()) ||
+        channel.description.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredChannels(filtered);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -124,14 +186,24 @@ export const BookDetail = ({ book, onBack }: BookDetailProps) => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base font-semibold">토론 채널</CardTitle>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setIsCreateModalOpen(true)}
+                    >
                       <Plus className="h-4 w-4" />
                     </Button>
+                  </div>
+                  <div className="mt-3">
+                    <ChannelSearch 
+                      onSearch={handleChannelSearch}
+                      placeholder="채널 검색..."
+                    />
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="space-y-1">
-                    {mockChannels.map((channel) => (
+                    {filteredChannels.map((channel) => (
                       <button
                         key={channel.id}
                         onClick={() => setSelectedChannel(channel)}
@@ -139,7 +211,14 @@ export const BookDetail = ({ book, onBack }: BookDetailProps) => {
                           selectedChannel.id === channel.id ? 'bg-teal-50 border-r-2 border-teal-600' : ''
                         }`}
                       >
-                        <div className="font-medium text-gray-900">{channel.name}</div>
+                        <div className="flex items-center space-x-2">
+                          <div className="font-medium text-gray-900">{channel.name}</div>
+                          {channel.isPrivate && (
+                            <Badge variant="outline" className="text-xs">
+                              🔒
+                            </Badge>
+                          )}
+                        </div>
                         <div className="text-xs text-gray-500 mt-1">
                           {channel.discussions.length}개 토론
                         </div>
@@ -152,11 +231,17 @@ export const BookDetail = ({ book, onBack }: BookDetailProps) => {
 
             {/* 선택된 채널의 토론 내용 */}
             <div className="lg:col-span-3">
-              <DiscussionChannel channel={selectedChannel} />
+              <DiscussionChannel channel={selectedChannel} onUserClick={onUserClick} />
             </div>
           </div>
         </div>
       </div>
+
+      <CreateChannelModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreateChannel={handleCreateChannel}
+      />
     </div>
   );
 };

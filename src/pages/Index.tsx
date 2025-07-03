@@ -1,8 +1,9 @@
-
 import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { BookCard } from '@/components/BookCard';
 import { BookDetail } from '@/components/BookDetail';
+import { Library } from './Library';
+import { Profile } from './Profile';
 import { Badge } from '@/components/ui/badge';
 
 const mockBooks = [
@@ -70,8 +71,12 @@ const mockBooks = [
 
 const categories = ['전체', '객체지향', '설계', '프로그래밍 언어', '코드 품질', '웹 개발'];
 
+type ViewType = 'main' | 'book' | 'library' | 'profile';
+
 const Index = () => {
+  const [currentView, setCurrentView] = useState<ViewType>('main');
   const [selectedBook, setSelectedBook] = useState<typeof mockBooks[0] | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
 
@@ -82,13 +87,60 @@ const Index = () => {
     return matchesSearch && matchesCategory;
   });
 
-  if (selectedBook) {
-    return <BookDetail book={selectedBook} onBack={() => setSelectedBook(null)} />;
+  const handleBookSelect = (bookId: string) => {
+    const book = mockBooks.find(b => b.id === bookId);
+    if (book) {
+      setSelectedBook(book);
+      setCurrentView('book');
+    }
+  };
+
+  const handleUserClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setCurrentView('profile');
+  };
+
+  const handleBackToMain = () => {
+    setCurrentView('main');
+    setSelectedBook(null);
+    setSelectedUserId('');
+  };
+
+  if (currentView === 'book' && selectedBook) {
+    return (
+      <BookDetail 
+        book={selectedBook} 
+        onBack={handleBackToMain}
+        onUserClick={handleUserClick}
+      />
+    );
+  }
+
+  if (currentView === 'library') {
+    return (
+      <Library 
+        onBack={handleBackToMain}
+        onSelectBook={handleBookSelect}
+      />
+    );
+  }
+
+  if (currentView === 'profile') {
+    return (
+      <Profile 
+        userId={selectedUserId}
+        onBack={handleBackToMain}
+        onSelectBook={handleBookSelect}
+      />
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onSearch={setSearchQuery} />
+      <Header 
+        onSearch={setSearchQuery}
+        onLibraryClick={() => setCurrentView('library')}
+      />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 헤더 섹션 */}
@@ -145,7 +197,7 @@ const Index = () => {
                 <BookCard
                   key={book.id}
                   book={book}
-                  onClick={() => setSelectedBook(book)}
+                  onClick={() => handleBookSelect(book.id)}
                 />
               ))}
             </div>
